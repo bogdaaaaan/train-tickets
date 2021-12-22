@@ -1,19 +1,12 @@
-import Builder from "../persistence/Builder";
+import Singleton from '../persistence/Singleton';
 
 export default class Facade {
-    createTicket (ticket) {
-        let builder = new Builder();
-        builder.setId(ticket.id);
+    constructor() {
+        this.database = new Singleton();
+    }
 
-        builder.setDispatchDate(ticket.dispatch_date);
-        builder.setArrivalDate(ticket.arrival_date);
-
-        builder.setDispatchPlace(ticket.dispatch_place);
-        builder.setArrivalPlace(ticket.arrival_place);
-
-        builder.setRaicarType(ticket.railcar_type);
-
-
-        console.log(builder.getResult());
+    async requestAvailableTickets (ticket) {
+        const res = await this.database.getvAvailableTickets(ticket);
+        return res;
     }
 }
