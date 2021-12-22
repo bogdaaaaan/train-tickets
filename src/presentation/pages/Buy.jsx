@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, Card, CardActions, CardContent } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
@@ -20,6 +20,23 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         margin: '10px auto',
     },
+    card: {
+        maxWidth: '400px',
+        border: '1px solid black',
+        margin: '10px'
+    },
+    card_holder: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    btn: {
+        background: '#fff',
+        color: '#000',
+        border: '1px solid black'
+    }
 }));
 
 const Buy = () => {
@@ -44,26 +61,32 @@ const Buy = () => {
     const createTicket = async () => {
         if (!validate(dispatch_date, arrival_date, dispatch_place, arrival_place)) return;
 
-        let t = {id: Math.floor(Math.random() * 10000), dispatch_date, arrival_date, dispatch_place, arrival_place, railcar_type};
+        let t = { id: Math.floor(Math.random() * 10000), dispatch_date, arrival_date, dispatch_place, arrival_place, railcar_type };
 
         setFetching(true);
 
         const res = await ticketsService.requestAvailableTickets(t);
-        if (res) {setFetching(false); setList(res.status)};
+        if (res) {
+            setFetching(false);
+            setList(res);
+        }
     };
-
-    useEffect(() => {
-        if (list) console.log(list);
-    }, [list, setList]);
 
     return (
         <Box className={classes.root}>
-            <form className={classes.form}>               
+            <form className={classes.form}>
                 <label htmlFor='dispatch_date'>Дата відправки</label>
-                <input className={classes.formControl} name='dispatch_date' id='dispatch_date' type='date' value={dispatch_date} onChange={changeDispatchDate}/>
+                <input
+                    className={classes.formControl}
+                    name='dispatch_date'
+                    id='dispatch_date'
+                    type='date'
+                    value={dispatch_date}
+                    onChange={changeDispatchDate}
+                />
 
                 <label htmlFor='arrival_date'>Дата прибуття</label>
-                <input className={classes.formControl} name='arrival_date' id='arrival_date' type='date' value={arrival_date} onChange={changeArrivalDate}/>
+                <input className={classes.formControl} name='arrival_date' id='arrival_date' type='date' value={arrival_date} onChange={changeArrivalDate} />
 
                 <label htmlFor='dispatch_place'>Місце відправки</label>
                 <select className={classes.formControl} name='dispatch_place' id='dispatch_place' value={dispatch_place} onChange={changeDispatchPlace}>
@@ -89,16 +112,34 @@ const Buy = () => {
                     <option value={'Люкс'}>Люкс</option>
                 </select>
 
-                
                 <Button variant='contained' color='default' onClick={createTicket}>
                     <Typography> Пошук </Typography>
                 </Button>
             </form>
 
             <p>{fetching ? 'Fetching data...' : ''}</p>
-            <div>{list ? list : ''}</div>
+            <div className={classes.card_holder}>
+                {list
+                    ? list.map((el, inx) => {
+                          return (
+                              <Card key={inx} className={classes.card}>
+                                  <CardContent>
+                                    <Typography style={{fontWeight: 'bold'}}> Потяг "{el.source} - {el.destination}" </Typography>
+                                    <Typography> Дата відправки: {el.dispatch_date} </Typography>
+                                    <Typography> Дата прибуття: {el.arrival_date} </Typography>
+                                    <Typography> Тип вагону: {el.railcar_type} </Typography>
+                                    <Typography> Номер вагону: {el.railcar_num} </Typography>
+                                    <Typography> Номер місця: {el.seat} </Typography>
+                                  </CardContent>
+                                  <CardActions>
+                                      <Button className={classes.btn} variant="outlined"> Замовити</Button>
+                                  </CardActions>
+                              </Card>
+                          );
+                      })
+                    : ''}
+            </div>
         </Box>
-        
     );
 };
 

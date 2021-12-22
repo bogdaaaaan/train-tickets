@@ -1,4 +1,13 @@
 export default class Builder {
+    constructor () {
+        this.id = '';
+        this.dispatch_date = '';
+        this.arrival_date = '';
+        this.dispatch_place = '';
+        this.arrival_place = '';
+        this.railcar_type = '';
+    }
+
     reset() {
         this.id = '';
         this.dispatch_date = '';
@@ -14,6 +23,13 @@ export default class Builder {
     setDispatchPlace = (dispatch_place) => this.dispatch_place = dispatch_place;
     setArrivalPlace = (arrival_place) => this.arrival_place = arrival_place;
     setRaicarType = (railcar_type) => this.railcar_type = railcar_type;
+
+    getId = () => this.id;
+    getDispatchDate = () => this.dispatch_date;
+    getArrivalDate = () => this.arrival_date;
+    getDispatchPlace = () => this.dispatch_place;
+    getArrivalPlace = () => this.arrival_place;
+    getRaicarType = () => this.railcar_type;
 
     getResult() {
         return {
