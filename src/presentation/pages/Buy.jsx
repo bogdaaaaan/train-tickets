@@ -1,8 +1,11 @@
-import { Box, FormControl, InputLabel, Select, MenuItem, TextField } from '@material-ui/core';
+import { Box, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+
+import Facade from '../../business/Facade';
+import { validate } from '../utils/validate';
 
 const useStyles = makeStyles(theme => ({
     form: {
@@ -13,8 +16,9 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
     },
     formControl: {
-        margin: theme.spacing(1),
         minWidth: 120,
+        width: '100%',
+        margin: '10px auto',
     },
 }));
 
@@ -32,6 +36,25 @@ const Buy = () => {
     const changeDispatchPlace = event => setDispatchPlace(event.target.value);
     const changeArrivalPlace = event => setArrivalPlace(event.target.value);
 
+    const createTicket = () => {
+        let v = validate(dispatch_date, arrival_date, dispatch_place, arrival_place);
+        if (v) {
+            alert(v);
+            return;
+        }
+        let t = {
+            id: Math.floor(Math.random() * 10000),
+            dispatch_date: dispatch_date,
+            arrival_date: arrival_date,
+            dispatch_place: dispatch_place,
+            arrival_place: arrival_place,
+            railcar_type: railcar_type,
+        };
+        console.log(t);
+        let facade = new Facade();
+        facade.createTicket(t);
+    };
+
     return (
         <Box className={classes.root}>
             <form className={classes.form}>
@@ -40,7 +63,7 @@ const Buy = () => {
                     label='Дата відправки'
                     type='date'
                     defaultValue=''
-                    className={classes.textField}
+                    className={classes.formControl}
                     InputLabelProps={{ shrink: true }}
                     onChange={changeDispatchDate}
                 />
@@ -49,43 +72,37 @@ const Buy = () => {
                     label='Дата прибуття'
                     type='date'
                     defaultValue=''
-                    className={classes.textField}
+                    className={classes.formControl}
                     InputLabelProps={{ shrink: true }}
                     onChange={changeArrivalDate}
                 />
 
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='select-dispatch_place'>Місце відправки</InputLabel>
-                    <Select labelId='select-dispatch_place' id='dispatch_place' value={dispatch_place} onChange={changeDispatchPlace} className={classes.selectEmpty}>
-                        <MenuItem value=''>None</MenuItem>
-                        <MenuItem value={'Херсон'}>Херсон</MenuItem>
-                        <MenuItem value={'Київ'}>Київ</MenuItem>
-                        <MenuItem value={'Львів'}>Львів</MenuItem>
-                    </Select>
-                </FormControl>
+                <label htmlFor='dispatch_place'>Місце відправки</label>
+                <select name='dispatch_place' id='dispatch_place' value={dispatch_place} onChange={changeDispatchPlace}>
+                    <option value=''>None</option>
+                    <option value={'Херсон'}>Херсон</option>
+                    <option value={'Київ'}>Київ</option>
+                    <option value={'Львів'}>Львів</option>
+                </select>
 
+                <label htmlFor='arrival_place'>Місце прибуття</label>
+                <select name='arrival_place' id='arrival_place' value={arrival_place} onChange={changeArrivalPlace}>
+                    <option value=''>None</option>
+                    <option value={'Херсон'}>Херсон</option>
+                    <option value={'Київ'}>Київ</option>
+                    <option value={'Львів'}>Львів</option>
+                </select>
 
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='select-arrival_place'>Місце прибуття</InputLabel>
-                    <Select labelId='select-arrival_place' id='arrival_place' value={arrival_place} onChange={changeArrivalPlace} className={classes.selectEmpty}>
-                        <MenuItem value=''>None</MenuItem>
-                        <MenuItem value={'Херсон'}>Херсон</MenuItem>
-                        <MenuItem value={'Київ'}>Київ</MenuItem>
-                        <MenuItem value={'Львів'}>Львів</MenuItem>
-                    </Select>
-                </FormControl>
+                <label htmlFor='railcar_type'>Тип вагону</label>
+                <select name='railcar_type' id='railcar_type' value={railcar_type} onChange={changeRailcarType}>
+                    <option value=''>None</option>
+                    <option value={'Плацкарт'}>Плацкарт</option>
+                    <option value={'Купе'}>Купе</option>
+                    <option value={'Люкс'}>Люкс</option>
+                </select>
 
-                <FormControl className={classes.formControl}>
-                    <InputLabel id='select-railcar_type'>Тип вагону</InputLabel>
-                    <Select labelId='select-railcar_type' id='railcar_type' value={railcar_type} onChange={changeRailcarType} className={classes.selectEmpty}>
-                        <MenuItem value=''>None</MenuItem>
-                        <MenuItem value={'плацкарт'}>Плацкарт</MenuItem>
-                        <MenuItem value={'купе'}>Купе</MenuItem>
-                        <MenuItem value={'люкс'}>Люкс</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <Button variant="contained" color="default">
+                
+                <Button variant='contained' color='default' onClick={createTicket}>
                     <Typography> Пошук </Typography>
                 </Button>
             </form>
