@@ -2,8 +2,7 @@ import { SERVER_URL } from "../const";
 
 export default class DB {
     getvAvailableTickets = async () => {
-        const res = await fetch(SERVER_URL + '/tickets');
-        return res;
+        return await fetch(SERVER_URL + '/tickets');
     }
 
     removeTicket = async (id) => {
@@ -14,6 +13,16 @@ export default class DB {
         return await fetch(SERVER_URL + '/add', {
             method: 'POST',
             body: JSON.stringify(ticket),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    }
+
+    addUser = async (user) => {
+        return await fetch(SERVER_URL + '/user_add', {
+            method: 'POST',
+            body: JSON.stringify(user),
             headers: {
                 "Content-Type": "application/json"
             }

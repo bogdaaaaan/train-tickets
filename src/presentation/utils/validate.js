@@ -5,3 +5,11 @@ export const validate = (d_date, a_date, d_place, a_place) => {
     if (a_place === '' || a_place === 'None') {alert('Заповніть поле місця прибуття'); return false};
     return true;
 }
+
+export const validate_user = (name, second_name, middle, passport_num) => {
+    if (name === '') {alert("Заповніть поле Ім'я"); return false};
+    if (second_name === '') {alert('Заповніть поле Прізвище'); return false};
+    if (middle === '') {alert('Заповніть поле По-батькові'); return false};
+    if (passport_num === '') {alert('Заповніть поле Номера паспорту'); return false};
+    return true;
+}

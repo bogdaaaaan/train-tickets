@@ -21,6 +21,13 @@ async function addTicket({ticket, db, collection}) {
     await client.db(db).collection(collection).insertOne(ticket);
 }
 
+async function addUser({user, db, collection}) {
+    const is_user = await client.db(db).collection(collection).find({"user_id": user.user_id}).toArray();
+    if (!is_user.length) {
+        await client.db(db).collection(collection).insertOne(user)
+    };
+}
+
 async function returnTicket({id, db, collection_from, collection_to}) {
     const ticket = await client.db(db).collection(collection_from).findOne({ "id": Int32(id) });
     if (ticket) {
@@ -82,12 +89,19 @@ router.post('/add', function (req, res, next) {
 router.post('/return', function (req, res, next) {
     main(returnTicket, true, {id: req.body.id, db: 'train_tickets', collection_from: 'tickets_in_use', collection_to: 'tickets'})
         .catch(console.error)
-        .then(data => {
-            if (!data) res.status(500).send({ error: 'Something failed!' });
+        .then(() => {
+            res.status(200).send('All ok!');
         });
 });
 
-
+// add user
+router.post('/user_add', function (req, res, next) {
+    main(addUser, false, {user: req.body, db: 'train_tickets', collection: 'users'})
+        .catch(console.error)
+        .then(() => {
+            res.status(200).send('All ok!');
+        });
+});
 
 
 
@@ -100,6 +114,8 @@ router.post('/return', function (req, res, next) {
 //         const source = sources[Math.floor(Math.random()*(sources.length))];
         
 //         const dispatch_date = (Math.floor(Math.random()*15) + 1);
+        
+//         const price = (Math.floor(Math.random()*500) + 1);
 
 //         let destination = sources[Math.floor(Math.random()*(sources.length))];
 //         while (source === destination) {
@@ -116,10 +132,12 @@ router.post('/return', function (req, res, next) {
 //             dispatch_date: dispatch_date < 9 ? '2021-12-0' + dispatch_date : '2021-12-' + dispatch_date,
 //             arrival_date: '2021-12-' +  (Math.floor(Math.random()*(30 - 15)) + 15),
 //             source: source,
-//             destination: destination
+//             destination: destination,
+//             price: price
 //         }
 
-//         await client.db('train_tickets').collection('tickets').insertOne(ticket);
+//         const insert = await client.db('train_tickets').collection('tickets').insertOne(ticket);
+//         console.log('');
 //     }
 // }
 

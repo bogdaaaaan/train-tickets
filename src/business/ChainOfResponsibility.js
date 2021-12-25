@@ -6,6 +6,19 @@ export default class ChainOfResponsibility {
         this.filter = new Specification();
     }
 
+    async addUserRequest(user) {
+        await this.database.addUser(user).then(data => {
+            try {
+                if (!data.ok) {
+                    throw new Error('Додавання нового користувача не вдалось!');
+                }
+                return data;
+            } catch (error) {
+                console.log('Виникла помилка з запитом: ', error.message);
+            };
+        })
+    }
+
     async getResponse() {
         return this.database.getvAvailableTickets().then(data => { 
             try {
@@ -19,7 +32,7 @@ export default class ChainOfResponsibility {
         });
     }
 
-    async transformData(data) {
+    async transformDataRequest(data) {
         return data.json().then(json => {
             try {
                 if (!json) {
@@ -32,11 +45,11 @@ export default class ChainOfResponsibility {
         })
     }
 
-    async filterData(filter, data) {
+    async filterDataRequest(filter, data) {
         return await this.filter.filterTickets(filter, data);
     }
 
-    async removeTicket(id) {
+    async removeTicketRequest(id) {
         await this.database.removeTicket(id).then(data => {
             try {
                 if (!data.ok) {
@@ -49,26 +62,24 @@ export default class ChainOfResponsibility {
         });
     }
 
-    async addUsedTicket(ticket) {
+    async addUsedTicketRequest(ticket) {
         await this.database.addUsedTicket(ticket).then(data => {
             try {
                 if (!data.ok) {
                     throw new Error('Додавання квитка не вдалось!');
-                }
-                return data;
+                }                
             } catch (error) {
                 console.log('Виникла помилка з запитом: ', error.message);
             };
         });
     }
 
-    async returnTicket(id) {
-        await this.database.returnTicket(id).then(data => {
+    async returnTicketRequest(id) {
+        return await this.database.returnTicket(id).then(data => {
             try {
                 if (!data.ok) {
                     throw new Error('Повернення квитка не вдалось!');
                 }
-                return data;
             } catch (error) {
                 console.log('Виникла помилка з запитом: ', error.message);
             };

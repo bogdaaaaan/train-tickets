@@ -9,8 +9,12 @@ export default class Facade {
         this.handler = new ChainOfResponsibility(this.database);
     }
 
+    async addUser (user) {
+        await this.handler.addUserRequest(user);
+    }
+
     async returnTicket(id) {
-        await this.handler.returnTicket(id);
+        await this.handler.returnTicketRequest(id);
     }
 
     async buyTicket(ticket) {
@@ -26,18 +30,19 @@ export default class Facade {
         this.builder.setSeat(ticket.seat);
         this.builder.setRailcarNum(ticket.railcar_num);
         this.builder.setTrainId(ticket.train_id);
+        this.builder.setPrice(ticket.price);
 
         const _ticket = this.builder.getTicket();
         
-        await this.handler.removeTicket(_ticket.id);
-        await this.handler.addUsedTicket(_ticket);
+        await this.handler.removeTicketRequest(_ticket.id);
+        await this.handler.addUsedTicketRequest(_ticket);
     }
 
     async requestAvailableTickets (ticket) {
         // database
         const res = await this.handler.getResponse();
         if (!res) return;
-        const json = await this.handler.transformData(res);
+        const json = await this.handler.transformDataRequest(res);
         if (!json) return;
         
         // create filter
@@ -49,7 +54,7 @@ export default class Facade {
         this.builder.setRaicarType(ticket.railcar_type);
 
         const filter = this.builder.getFilterData();
-        const array = await this.handler.filterData(filter, json);
+        const array = await this.handler.filterDataRequest(filter, json);
         if (!array) return;
 
         return array;

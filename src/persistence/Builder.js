@@ -10,6 +10,7 @@ export default class Builder {
         this.seat = '';
         this.railcar_num = '';
         this.train_id = '';
+        this.price = '';
     }
 
     reset() {
@@ -23,6 +24,7 @@ export default class Builder {
         this.seat = '';
         this.railcar_num = '';
         this.train_id = '';
+        this.price = '';
     }
 
     set_id = (_id) => this._id = _id; 
@@ -35,7 +37,7 @@ export default class Builder {
     setSeat = (seat) => this.seat = seat;
     setRailcarNum = (railcar_num) => this.railcar_num = railcar_num;
     setTrainId = (train_id) => this.train_id = train_id;
-
+    setPrice = (price) => this.price = price;
 
     get_id = () => this._id;
     getId = () => this.id;
@@ -47,6 +49,7 @@ export default class Builder {
     getSeat = () => this.seat;
     getRailcarNum = () => this.railcar_num;
     getTrainId = () => this.train_id;
+    getPrice = () => this.price;
 
     getFilterData() {
         return {
@@ -62,14 +65,15 @@ export default class Builder {
         return {
             _id: this._id,
             id: this.id,
+            train_id: this.train_id,
+            railcar_num: this.railcar_num,
+            railcar_type: this.railcar_type,
+            seat: this.seat,
             dispatch_date: this.dispatch_date,
             arrival_date: this.arrival_date,
             source: this.source,
             destination: this.destination,
-            railcar_type: this.railcar_type,
-            seat: this.seat,
-            railcar_num: this.railcar_num,
-            train_id: this.train_id
+            price: this.price
         }
     }
 }

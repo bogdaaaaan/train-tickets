@@ -1,9 +1,7 @@
-import { Box, Card, CardActions, CardContent } from '@material-ui/core';
+import { Box, Card, CardActions, CardContent, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-
+import { Link } from 'react-router-dom';
 import Facade from '../../business/Facade';
 import { validate } from '../utils/validate';
 
@@ -35,7 +33,9 @@ const useStyles = makeStyles(theme => ({
     btn: {
         background: '#fff',
         color: '#000',
-        border: '1px solid black'
+        border: '1px solid black',
+        textDecoration: 'none',
+        padding: '10px 25px'
     }
 }));
 
@@ -132,12 +132,10 @@ const Buy = () => {
                                         <Typography> Тип вагону: {el.railcar_type} </Typography>
                                         <Typography> Номер вагону: {el.railcar_num} </Typography>
                                         <Typography> Номер місця: {el.seat} </Typography>
+                                        <Typography style={{fontWeight: 'bold'}}> Ціна: {el.price} </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Button className={classes.btn} variant="outlined" onClick={async () => {
-                                            await ticketsService.buyTicket(el);
-                                            window.location.reload();
-                                        }}> Замовити</Button>
+                                        <Link className={classes.btn} to='/order' state={{ticket: el}}>Замовити</Link>
                                     </CardActions>
                                 </Card>
                             );
