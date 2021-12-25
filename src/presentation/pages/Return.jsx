@@ -42,6 +42,8 @@ const Return = () => {
 
                 <Button variant='contained' color='default' onClick={async () => {
                     await ticketsService.returnTicket({id: Number(ticket_id)});
+                    alert('Квиток повернуто!');
+                    window.location.reload();
                 }}>
                     <Typography> Повернути </Typography>
                 </Button>

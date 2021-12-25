@@ -9,6 +9,27 @@ export default class Facade {
         this.handler = new ChainOfResponsibility(this.database);
     }
 
+    async reserveTicket(ticket) {
+        // create ticket
+        this.builder.reset();
+        this.builder.set_id(ticket._id);
+        this.builder.setId(ticket.id);
+        this.builder.setDispatchDate(ticket.dispatch_date);
+        this.builder.setArrivalDate(ticket.arrival_date);
+        this.builder.setSource(ticket.source);
+        this.builder.setDestination(ticket.destination);
+        this.builder.setRaicarType(ticket.railcar_type);
+        this.builder.setSeat(ticket.seat);
+        this.builder.setRailcarNum(ticket.railcar_num);
+        this.builder.setTrainId(ticket.train_id);
+        this.builder.setPrice(ticket.price);
+
+        const _ticket = this.builder.getTicket();
+        
+        await this.handler.removeTicketRequest(_ticket.id);
+        await this.handler.reserveTicketRequest(_ticket);
+    }
+
     async addUser (user) {
         await this.handler.addUserRequest(user);
     }

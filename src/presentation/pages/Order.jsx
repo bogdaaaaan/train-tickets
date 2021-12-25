@@ -35,6 +35,12 @@ const Order = () => {
     const {ticket} = location.state;
     const ticketsService = new Facade();
 
+    const [timeouts, setTimeouts] = useState([]);
+    setTimeouts([...timeouts, setTimeout(() => {
+        alert('Час на покупку білету - 5хв. Необхідно повторити оформлення білету!');
+        window.location.href='/';
+    }, 300000)]);
+
     const [first_name, setFirstName] = useState('');
     const [second_name, setSecondName] = useState('');
     const [middle_name, setMiddleName] = useState('');

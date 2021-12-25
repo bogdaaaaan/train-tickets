@@ -81,8 +81,28 @@ router.post('/add', function (req, res, next) {
     main(addTicket, false, {ticket: req.body, db: 'train_tickets', collection: 'tickets_in_use'})
         .catch(console.error)
         .then(() => {
+            main(removeTicket, false, {id: req.body.id, db: 'train_tickets', collection: 'reserved_tickets'})
+            .catch(console.error)
+            .then(() => {
+                res.status(200).send('Removed element from reserved tickets!');
+            });
+    });
+    
+});
+
+// reserve ticket
+router.post('/reserve', function (req, res, next) {
+    main(addTicket, false, {ticket: req.body, db: 'train_tickets', collection: 'reserved_tickets'})
+        .catch(console.error)
+        .then(() => {
             res.status(200).send('Added element to used tickets!');
+            setTimeout(() => {
+                main(removeTicket, false, {id: req.body.id, db: 'train_tickets', collection: 'reserved_tickets'})
+                .catch(console.error)
+                .then(() => {console.log('ticket ' + req.body.id + ' was removed from reserved')});
+            }, 300000);
         });
+    
 });
 
 // remove ticket by id from used and add to available

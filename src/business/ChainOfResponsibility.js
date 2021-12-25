@@ -74,6 +74,18 @@ export default class ChainOfResponsibility {
         });
     }
 
+    async reserveTicketRequest(ticket) {
+        await this.database.reserveTicket(ticket).then(data => {
+            try {
+                if (!data.ok) {
+                    throw new Error('Резервування квитка не вдалось!');
+                }                
+            } catch (error) {
+                console.log('Виникла помилка з запитом: ', error.message);
+            };
+        });
+    }
+
     async returnTicketRequest(id) {
         return await this.database.returnTicket(id).then(data => {
             try {

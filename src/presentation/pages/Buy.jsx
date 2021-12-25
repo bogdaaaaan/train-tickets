@@ -135,7 +135,9 @@ const Buy = () => {
                                         <Typography style={{fontWeight: 'bold'}}> Ціна: {el.price} </Typography>
                                     </CardContent>
                                     <CardActions>
-                                        <Link className={classes.btn} to='/order' state={{ticket: el}}>Замовити</Link>
+                                        <Link className={classes.btn} to='/order' state={{ticket: el}} onClick={async () => {
+                                            await ticketsService.reserveTicket(el);
+                                        }}>Замовити</Link>
                                     </CardActions>
                                 </Card>
                             );

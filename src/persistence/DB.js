@@ -29,6 +29,16 @@ export default class DB {
         });
     }
 
+    reserveTicket = async (ticket) => {
+        return await fetch(SERVER_URL + '/reserve', {
+            method: 'POST',
+            body: JSON.stringify(ticket),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    }
+
     returnTicket = async (id) => {
         return await fetch(SERVER_URL + '/return', {
             method: 'POST',
