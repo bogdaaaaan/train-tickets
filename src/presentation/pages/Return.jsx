@@ -2,6 +2,7 @@ import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography, Button, TextField } from '@material-ui/core';
 import { useState } from 'react';
+import Facade from '../../business/Facade';
 
 const useStyles = makeStyles(theme => ({
     form: {
@@ -19,6 +20,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Return = () => {
+    const ticketsService = new Facade();
     const classes = useStyles();
 
     const [ticket_id, setTicketId] = useState('');
@@ -38,8 +40,10 @@ const Return = () => {
                     onChange={hangeTicketId}
                 />
 
-                <Button variant='contained' color='default'>
-                    <Typography> Пошук </Typography>
+                <Button variant='contained' color='default' onClick={async () => {
+                    await ticketsService.returnTicket({id: Number(ticket_id)});
+                }}>
+                    <Typography> Повернути </Typography>
                 </Button>
             </form>
         </Box>

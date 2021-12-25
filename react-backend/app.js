@@ -4,10 +4,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
-const indexRouter = require('./routes/index');
-const ticketsRouter = require('./routes/tickets');
-
+const router = require('./routes/index');
 const app = express();
 
 // view engine setup
@@ -21,8 +20,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/tickets', ticketsRouter);
+app.use(bodyParser.json());
+app.use('/', router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

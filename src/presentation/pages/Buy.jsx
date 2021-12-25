@@ -1,6 +1,6 @@
 import { Box, Card, CardActions, CardContent } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
@@ -49,23 +49,25 @@ const Buy = () => {
     const [railcar_type, setRailcarType] = useState('');
     const [dispatch_date, setDispatchDate] = useState('');
     const [arrival_date, setArrivalDate] = useState('');
-    const [dispatch_place, setDispatchPlace] = useState('');
-    const [arrival_place, setArrivalPlace] = useState('');
+    const [source, setSource] = useState('');
+    const [destination, setDestination] = useState('');
 
     const changeRailcarType = event => setRailcarType(event.target.value);
     const changeDispatchDate = event => setDispatchDate(event.target.value);
     const changeArrivalDate = event => setArrivalDate(event.target.value);
-    const changeDispatchPlace = event => setDispatchPlace(event.target.value);
-    const changeArrivalPlace = event => setArrivalPlace(event.target.value);
+    const changeSource = event => setSource(event.target.value);
+    const changeDestination = event => setDestination(event.target.value);
 
     const createTicket = async () => {
-        if (!validate(dispatch_date, arrival_date, dispatch_place, arrival_place)) return;
+        if (!validate(dispatch_date, arrival_date, source, destination)) return;
 
-        let t = { id: Math.floor(Math.random() * 10000), dispatch_date, arrival_date, dispatch_place, arrival_place, railcar_type };
+        let f = { dispatch_date, arrival_date, source, destination, railcar_type };
 
         setFetching(true);
 
-        const res = await ticketsService.requestAvailableTickets(t);
+        // get tickets from server
+        const res = await ticketsService.requestAvailableTickets(f);
+        
         if (res) {
             setFetching(false);
             setList(res);
@@ -88,16 +90,16 @@ const Buy = () => {
                 <label htmlFor='arrival_date'>Дата прибуття</label>
                 <input className={classes.formControl} name='arrival_date' id='arrival_date' type='date' value={arrival_date} onChange={changeArrivalDate} />
 
-                <label htmlFor='dispatch_place'>Місце відправки</label>
-                <select className={classes.formControl} name='dispatch_place' id='dispatch_place' value={dispatch_place} onChange={changeDispatchPlace}>
+                <label htmlFor='source'>Місце відправки</label>
+                <select className={classes.formControl} name='source' id='source' value={source} onChange={changeSource}>
                     <option value=''>None</option>
                     <option value={'Херсон'}>Херсон</option>
                     <option value={'Київ'}>Київ</option>
                     <option value={'Львів'}>Львів</option>
                 </select>
 
-                <label htmlFor='arrival_place'>Місце прибуття</label>
-                <select className={classes.formControl} name='arrival_place' id='arrival_place' value={arrival_place} onChange={changeArrivalPlace}>
+                <label htmlFor='destination'>Місце прибуття</label>
+                <select className={classes.formControl} name='destination' id='destination' value={destination} onChange={changeDestination}>
                     <option value=''>None</option>
                     <option value={'Херсон'}>Херсон</option>
                     <option value={'Київ'}>Київ</option>
@@ -117,28 +119,33 @@ const Buy = () => {
                 </Button>
             </form>
 
-            <p>{fetching ? 'Fetching data...' : ''}</p>
-            <div className={classes.card_holder}>
-                {list
-                    ? list.map((el, inx) => {
-                          return (
-                              <Card key={inx} className={classes.card}>
-                                  <CardContent>
-                                    <Typography style={{fontWeight: 'bold'}}> Потяг "{el.source} - {el.destination}" </Typography>
-                                    <Typography> Дата відправки: {el.dispatch_date} </Typography>
-                                    <Typography> Дата прибуття: {el.arrival_date} </Typography>
-                                    <Typography> Тип вагону: {el.railcar_type} </Typography>
-                                    <Typography> Номер вагону: {el.railcar_num} </Typography>
-                                    <Typography> Номер місця: {el.seat} </Typography>
-                                  </CardContent>
-                                  <CardActions>
-                                      <Button className={classes.btn} variant="outlined"> Замовити</Button>
-                                  </CardActions>
-                              </Card>
-                          );
-                      })
-                    : ''}
-            </div>
+            <div>{fetching ? 'Fetching data...' : 
+                <div className={classes.card_holder}>
+                    {list
+                        ? list.map((el, inx) => {
+                            return (
+                                <Card key={inx} className={classes.card}>
+                                    <CardContent>
+                                        <Typography style={{fontWeight: 'bold'}}> Потяг "{el.source} - {el.destination}" </Typography>
+                                        <Typography> Дата відправки: {el.dispatch_date} </Typography>
+                                        <Typography> Дата прибуття: {el.arrival_date} </Typography>
+                                        <Typography> Тип вагону: {el.railcar_type} </Typography>
+                                        <Typography> Номер вагону: {el.railcar_num} </Typography>
+                                        <Typography> Номер місця: {el.seat} </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button className={classes.btn} variant="outlined" onClick={async () => {
+                                            await ticketsService.buyTicket(el);
+                                            window.location.reload();
+                                        }}> Замовити</Button>
+                                    </CardActions>
+                                </Card>
+                            );
+                        })
+                        : ''}
+                </div>
+            }</div>
+            
         </Box>
     );
 };
