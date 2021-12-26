@@ -5,7 +5,7 @@ const client = require('../Singleton');
 
 async function listTickets(filters) {
     if (!filters) {
-        const ticketsList = await client.db('train_tickets').collection('tickets').find({}).toArray();
+        const ticketsList = await client.db('services').collection('service1').find({}).toArray();
         return ticketsList;
     } 
     
@@ -20,8 +20,19 @@ async function listTickets(filters) {
 
 
     console.log(filters);
-    const ticketsList = await client.db('train_tickets').collection('tickets').find(filters).toArray();
-    return ticketsList;
+    const ticketsList = await client.db('services').collection('service1').find(filters).toArray();
+    const result = ticketsList.map(el => {
+        let obj = {};
+        obj.price = el.price;
+        for (const key in filters) {
+            if (Object.hasOwnProperty.call(filters, key)) {
+                obj[key] = el[key];
+            }
+        }
+        
+        return obj;
+    })
+    return result;
 }
 
 async function main(_function, _return, _params) {

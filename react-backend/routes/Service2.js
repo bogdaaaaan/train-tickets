@@ -6,12 +6,12 @@ const client = require('../Singleton');
 async function getPriceList() {
     const arr = await client.db('services').collection('service2').find({}).toArray();
     return arr.map(el => {
-        return {id: el.id, name: el.name, price: el.price};
+        return {id: el.id, name: el.source + ' - ' + el.destination, price: el.price};
     });
 }
 
 async function getDetails(id) {
-    return await client.db('train_tickets').collection('tickets').find({"id": Int32(id)}).toArray();
+    return await client.db('services').collection('service2').find({"id": Int32(id)}).toArray();
 }
 
 async function main(_function, _return, _params) {
