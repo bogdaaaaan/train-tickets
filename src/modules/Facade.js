@@ -75,7 +75,6 @@ export default class Facade {
         if (!res) return;
         const json = await this.handler.transformDataRequest(res);
         if (!json) return;
-
         const array = await this.handler.filterDataRequest(filter, json);
         if (!array) return;
 
