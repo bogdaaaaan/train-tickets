@@ -67,46 +67,4 @@ router.get('/search', function (req, res, next) {
     
 });
 
-
-
-async function generate() {
-    const types = ['Купе', 'Плацкарт', 'Люкс'];
-    const sources = ['Херсон', 'Київ', 'Львів'];
-    for (let i = 0; i < 100000; i++) {
-        const source = sources[Math.floor(Math.random()*(sources.length))];
-        
-        const dispatch_date = (Math.floor(Math.random()*15) + 1);
-        
-        const price = (Math.floor(Math.random()*500) + 1);
-
-        let destination = sources[Math.floor(Math.random()*(sources.length))];
-        while (source === destination) {
-            destination = sources[Math.floor(Math.random()*(sources.length))];
-        }
-
-        const ticket = {
-            id: i,
-            train_id: Math.floor(Math.random()*6) + 1,
-            railcar_num: Math.floor(Math.random()*10) + 1,
-            railcar_type: types[Math.floor(Math.random()*(types.length))],
-            seat:  Math.floor(Math.random()*30) + 1,
-            dispatch_date: dispatch_date < 9 ? '2021-12-0' + dispatch_date : '2021-12-' + dispatch_date,
-            arrival_date: '2021-12-' +  (Math.floor(Math.random()*(30 - 15)) + 15),
-            source: source,
-            destination: destination,
-            price: price
-        }
-
-        const insert = await client.db('services').collection('service1').insertOne(ticket);
-    }
-}
-
-router.get('/gen', async function (req, res, next) {
-    main(generate, false)
-        .catch(console.error)
-        .then(() => {
-            res.status(200).send('gen');
-        });
-});
-
 module.exports = router;

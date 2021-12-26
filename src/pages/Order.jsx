@@ -30,16 +30,17 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Order = () => {
+    console.log('render');
     const classes = useStyles();
     const location = useLocation()
     const {ticket} = location.state;
     const ticketsService = new Facade();
 
-    const [timeouts, setTimeouts] = useState([]);
-    setTimeouts([...timeouts, setTimeout(() => {
+
+    setTimeout(() => {
         alert('Час на покупку білету - 5хв. Необхідно повторити оформлення білету!');
         window.location.href='/';
-    }, 300000)]);
+    }, 300000);
 
     const [first_name, setFirstName] = useState('');
     const [second_name, setSecondName] = useState('');

@@ -121,7 +121,7 @@ const Buy = () => {
 
             <div>{fetching ? 'Fetching data...' : 
                 <div className={classes.card_holder}>
-                    {list
+                    {(list && list.length)
                         ? list.map((el, inx) => {
                             return (
                                 <Card key={inx} className={classes.card}>

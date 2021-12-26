@@ -10,7 +10,13 @@ router.get('/', function (req, res, next) {
 
 async function listTickets(filter) {
     const ticketsList = await client.db('train_tickets').collection('tickets').find(filter).toArray();
-    return ticketsList;
+    const ticketsList1 = await client.db('services').collection('service1').find(filter).toArray();
+    const ticketsList2 = await client.db('services').collection('service2').find(filter).toArray();
+
+//    const data = Promise.all([ticketsList, ticketsList1, ticketsList2]);
+    console.log(ticketsList.length,ticketsList1.length,ticketsList2.length)
+    const result = ticketsList.concat(ticketsList1, ticketsList2);
+    return result;
 }
 
 async function removeTicket({id, db, collection}) {
