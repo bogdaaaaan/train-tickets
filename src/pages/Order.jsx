@@ -30,7 +30,6 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Order = () => {
-    console.log('render');
     const classes = useStyles();
     const location = useLocation()
     const {ticket} = location.state;
