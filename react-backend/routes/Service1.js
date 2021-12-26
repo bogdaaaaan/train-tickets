@@ -3,36 +3,30 @@ const { Int32 } = require('mongodb');
 const router = express.Router();
 const client = require('../Singleton');
 
+// function to list all tickets from service 1
 async function listTickets(filters) {
-    const start = Date.now();
-	
-    if (!filters) {
-        const ticketsList = await client.db('services').collection('service1').find({}).toArray();
-        return ticketsList; 
-    } 
+    // if there isnt filters to search with return all data 
+    if (!filters) return await client.db('services').collection('service1').find({}).toArray(); 
     
+    // remake data to fit 
     for (const key in filters) {
         if (Object.hasOwnProperty.call(filters, key)) {
             const element = filters[key];
-            if (Number.isInteger(Number(element)) && element) {
-                filters[key] = Int32(element);
-            }
+            if (Number.isInteger(Number(element)) && element) filters[key] = Int32(element);
         }
     }
 
+    // get list with filters
     const ticketsList = await client.db('services').collection('service1').find(filters).toArray();
+    // return only filtered data + price
     const result = ticketsList.map(el => {
         let obj = {};
         obj.price = el.price;
         for (const key in filters) {
-            if (Object.hasOwnProperty.call(filters, key)) {
-                obj[key] = el[key];
-            }
+            if (Object.hasOwnProperty.call(filters, key)) obj[key] = el[key];
         }
-        
         return obj;
     })
-
     return result;
 }
 
@@ -68,6 +62,7 @@ router.get('/search', function (req, res, next) {
         main(listTickets, true)
             .catch(console.error)
             .then(tickets => {
+                // implement delay
                 const duration = Date.now() - start;
                 console.log(duration/1000);
                 setTimeout(() => {
@@ -78,6 +73,7 @@ router.get('/search', function (req, res, next) {
         main(listTickets, true, Object.fromEntries(list_of_filters))
             .catch(console.error)
             .then(tickets => {
+                // implement delay
                 const duration = Date.now() - start;
                 console.log(duration/1000);
                 setTimeout(() => {

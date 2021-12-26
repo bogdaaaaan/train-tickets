@@ -2,22 +2,10 @@ const express = require('express');
 const { Int32, ObjectId } = require('mongodb');
 const router = express.Router();
 const client = require('../Singleton');
-
-
-const filter_arr = (arr, obj) => {
-    return arr.filter(el => {
-        let flag = false;
-        for (const key in obj) {
-            if (Object.hasOwnProperty.call(obj, key)) {
-                const element = obj[key];
-                if (el[key] !== obj[key]) flag = true;;
-            }
-        }
-        if (!flag) return el;
-    })
-}
-
+const filter_arr = require('../Filter');
 const cache = [];
+
+// function to update cache
 const update_cache = async () => {
     await client.connect();
     const ticketsList = await client.db('train_tickets').collection('tickets').find({}).toArray();
@@ -38,11 +26,11 @@ const update_cache = async () => {
     }
     console.log('Data is cached! Size: ', cache.length);
 }
+// update cache instantly and then every 24 hours
 (async function() {
     await update_cache();
     setInterval(async () => await update_cache(), 86400000)
 })();
-
 
 
 /* GET home page. */
@@ -50,26 +38,33 @@ router.get('/', function (req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
+// function to list all tickets
 async function listTickets(filter) {
+    // if cache is available try to return data from it
     if (cache.length) return filter_arr(cache, filter);
     
+    // if there is no cached data get it directly from db
     const ticketsList = await client.db('train_tickets').collection('tickets').find(filter).toArray();
     const ticketsList1 = await client.db('services').collection('service1').find(filter).toArray();
-    const ticketsList2 = await client.db('services').collection('service2').find(filter).toArray();
-
-    console.log(ticketsList.length,ticketsList1.length,ticketsList2.length)
+    const ticketsList2 = await client.db('services').collection('service2').find(filter).toArray();    
+    
+    // create result array where data from all services are 
     const result = ticketsList.concat(ticketsList1, ticketsList2);
+    console.log('Size of filtered data from Database: ', result.length);
     return result;
 }
 
+// function to remove ticket by id from database 'db' and collection 'collection'
 async function removeTicket({id, db, collection}) {
     await client.db(db).collection(collection).deleteOne({ id: Int32(id) });
 }
 
+// function to add ticket from database 'db' and collection 'collection'
 async function addTicket({ticket, db, collection}) {
     await client.db(db).collection(collection).insertOne(ticket);
 }
 
+// function to add user to database 'db' and collection 'collection' if there is not one already
 async function addUser({user, db, collection}) {
     const is_user = await client.db(db).collection(collection).find({"user_id": user.user_id}).toArray();
     if (!is_user.length) {
@@ -77,8 +72,10 @@ async function addUser({user, db, collection}) {
     };
 }
 
+// function to return ticket in database 'db' from collection 'collection_from' to 'collection_to'
 async function returnTicket({id, db, collection_from, collection_to}) {
     const ticket = await client.db(db).collection(collection_from).findOne({ "id": Int32(id) });
+    // if there is ticket in collection, transfer it to another collection
     if (ticket) {
         ticket._id = ObjectId(ticket._id);
         await client.db(db).collection(collection_to).insertOne(ticket);
@@ -87,10 +84,9 @@ async function returnTicket({id, db, collection_from, collection_to}) {
     return ticket;
 }
 
+// function to catch errors
 async function main(_function, _return, _params) {
     try {
-        // Connect to the MongoDB cluster
-        
         // Make the appropriate DB calls
         if (_return) {
             const tickets = await _function(_params);
@@ -103,17 +99,17 @@ async function main(_function, _return, _params) {
     }
 }
 
-
 /* GET tickets listing. */
 router.post('/tickets', function (req, res, next) {
+    // create filter from body of POST request
     let filter = {};
-
     filter.dispatch_date = String(req.body.dispatch_date);
     filter.arrival_date = String(req.body.arrival_date);
     filter.source = String(req.body.source);
     filter.destination = String(req.body.destination);
     if (req.body.railcar_type && req.body.railcar_type !== 'None') filter.railcar_type = String(req.body.railcar_type);
 
+    // return tickets by filter
     main(listTickets, true, filter)
         .catch(console.error)
         .then(tickets => {
@@ -177,9 +173,9 @@ router.post('/user_add', function (req, res, next) {
         });
 });
 
+module.exports = router;
 
-
-
+// functions to generate data in db
 // async function generate() {
 //     const types = ['Купе', 'Плацкарт', 'Люкс'];
 //     const sources = ['Херсон', 'Київ', 'Львів'];
@@ -222,6 +218,3 @@ router.post('/user_add', function (req, res, next) {
 //             res.status(200).send('gen');
 //         });
 // });
-
-
-module.exports = router;

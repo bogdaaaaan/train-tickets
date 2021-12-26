@@ -3,6 +3,7 @@ const { Int32 } = require('mongodb');
 const router = express.Router();
 const client = require('../Singleton');
 
+// get price-list data by page (5000 entries by page)
 async function getPriceList(page_num) {
     let arr = [];
     if (page_num) {
@@ -16,10 +17,12 @@ async function getPriceList(page_num) {
     });
 }
 
+// get data of one entry by id
 async function getDetails(id) {
     return await client.db('services').collection('service2').find({"id": Int32(id)}).toArray();
 }
 
+// get details data by page (5000 entries by page)
 async function getDetailsByPage(page_num) {
     if (page_num) {
         return await client.db('services').collection('service2').find({}).skip(5000 * page_num).limit(5000).toArray();
@@ -28,6 +31,7 @@ async function getDetailsByPage(page_num) {
     }
 }
 
+// function to catch errors
 async function main(_function, _return, _params) {
     try {
         // Connect to the MongoDB cluster
