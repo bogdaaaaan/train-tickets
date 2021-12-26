@@ -1,12 +1,14 @@
 const express = require('express');
-const { Int32, ObjectId } = require('mongodb');
+const { Int32 } = require('mongodb');
 const router = express.Router();
 const client = require('../Singleton');
 
 async function listTickets(filters) {
+    const start = Date.now();
+	
     if (!filters) {
         const ticketsList = await client.db('services').collection('service1').find({}).toArray();
-        return ticketsList;
+        return ticketsList; 
     } 
     
     for (const key in filters) {
@@ -18,8 +20,6 @@ async function listTickets(filters) {
         }
     }
 
-
-    console.log(filters);
     const ticketsList = await client.db('services').collection('service1').find(filters).toArray();
     const result = ticketsList.map(el => {
         let obj = {};
@@ -32,6 +32,7 @@ async function listTickets(filters) {
         
         return obj;
     })
+
     return result;
 }
 
@@ -61,18 +62,27 @@ router.get('/', function (req, res, next) {
 
 /* GET search page. */
 router.get('/search', function (req, res, next) {
+    const start = Date.now();
     const list_of_filters = Object.entries(req.query);
     if (list_of_filters.length === 0) {
         main(listTickets, true)
             .catch(console.error)
             .then(tickets => {
-                res.send(tickets);
+                const duration = Date.now() - start;
+                console.log(duration/1000);
+                setTimeout(() => {
+                    res.send(tickets);
+                }, (25000-duration));
             });
     } else {
         main(listTickets, true, Object.fromEntries(list_of_filters))
             .catch(console.error)
             .then(tickets => {
-                res.send(tickets);
+                const duration = Date.now() - start;
+                console.log(duration/1000);
+                setTimeout(() => {
+                    res.send(tickets);
+                }, (25000-duration));
             });
     }
     

@@ -3,12 +3,56 @@ const { Int32, ObjectId } = require('mongodb');
 const router = express.Router();
 const client = require('../Singleton');
 
+
+const filter_arr = (arr, obj) => {
+    return arr.filter(el => {
+        let flag = false;
+        for (const key in obj) {
+            if (Object.hasOwnProperty.call(obj, key)) {
+                const element = obj[key];
+                if (el[key] !== obj[key]) flag = true;;
+            }
+        }
+        if (!flag) return el;
+    })
+}
+
+const cache = [];
+const update_cache = async () => {
+    await client.connect();
+    const ticketsList = await client.db('train_tickets').collection('tickets').find({}).toArray();
+    const ticketsList1 = await client.db('services').collection('service1').find({}).toArray();
+    const ticketsList2 = await client.db('services').collection('service2').find({}).toArray();
+
+    const result = ticketsList.concat(ticketsList1, ticketsList2);
+
+    for (let i = 0; i < result.length; i++) {
+        let obj = {};
+        for (const key in result[i]) {
+            if (Object.hasOwnProperty.call(result[i], key)) {
+                const element = result[i][key];
+                obj[key] = result[i][key];
+            }
+        }
+        cache[i] = obj;
+    }
+    console.log('Data is cached! Size: ', cache.length);
+}
+(async function() {
+    await update_cache();
+    setInterval(async () => await update_cache(), 86400000)
+})();
+
+
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
 async function listTickets(filter) {
+    if (cache.length) return filter_arr(cache, filter);
+    
     const ticketsList = await client.db('train_tickets').collection('tickets').find(filter).toArray();
     const ticketsList1 = await client.db('services').collection('service1').find(filter).toArray();
     const ticketsList2 = await client.db('services').collection('service2').find(filter).toArray();
@@ -46,8 +90,7 @@ async function returnTicket({id, db, collection_from, collection_to}) {
 async function main(_function, _return, _params) {
     try {
         // Connect to the MongoDB cluster
-        await client.connect();
-
+        
         // Make the appropriate DB calls
         if (_return) {
             const tickets = await _function(_params);
@@ -57,8 +100,6 @@ async function main(_function, _return, _params) {
         }
     } catch (e) {
         console.error(e);
-    } finally {
-        await client.close();
     }
 }
 
