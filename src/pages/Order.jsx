@@ -2,8 +2,8 @@ import { Box, TextField, Typography, Button } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
 import { useLocation } from 'react-router';
-import Facade from '../../business/Facade';
-import { validate_user } from '../utils/validate';
+import Facade from '../modules/Facade';
+import { validate_user } from '../modules/utils/validate';
 
 const useStyles = makeStyles(theme => ({
     ticket_data: {

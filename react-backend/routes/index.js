@@ -8,8 +8,8 @@ router.get('/', function (req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
-async function listTickets() {
-    const ticketsList = await client.db('train_tickets').collection('tickets').find({}).toArray();
+async function listTickets(filter) {
+    const ticketsList = await client.db('train_tickets').collection('tickets').find(filter).toArray();
     return ticketsList;
 }
 
@@ -59,8 +59,16 @@ async function main(_function, _return, _params) {
 
 
 /* GET tickets listing. */
-router.get('/tickets', function (req, res, next) {
-    main(listTickets, true)
+router.post('/tickets', function (req, res, next) {
+    let filter = {};
+
+    filter.dispatch_date = String(req.body.dispatch_date);
+    filter.arrival_date = String(req.body.arrival_date);
+    filter.source = String(req.body.source);
+    filter.destination = String(req.body.destination);
+    if (req.body.railcar_type && req.body.railcar_type !== 'None') filter.railcar_type = String(req.body.railcar_type);
+
+    main(listTickets, true, filter)
         .catch(console.error)
         .then(tickets => {
             res.send(tickets);

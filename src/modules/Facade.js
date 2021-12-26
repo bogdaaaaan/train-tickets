@@ -1,5 +1,5 @@
-import Builder from '../persistence/Builder';
-import DB from '../persistence/DB';
+import Builder from './Builder';
+import DB from './DB';
 import ChainOfResponsibility from './ChainOfResponsibility';
 
 export default class Facade {
@@ -25,12 +25,12 @@ export default class Facade {
         this.builder.setPrice(ticket.price);
 
         const _ticket = this.builder.getTicket();
-        
+
         await this.handler.removeTicketRequest(_ticket.id);
         await this.handler.reserveTicketRequest(_ticket);
     }
 
-    async addUser (user) {
+    async addUser(user) {
         await this.handler.addUserRequest(user);
     }
 
@@ -54,18 +54,12 @@ export default class Facade {
         this.builder.setPrice(ticket.price);
 
         const _ticket = this.builder.getTicket();
-        
+
         await this.handler.removeTicketRequest(_ticket.id);
         await this.handler.addUsedTicketRequest(_ticket);
     }
 
-    async requestAvailableTickets (ticket) {
-        // database
-        const res = await this.handler.getResponse();
-        if (!res) return;
-        const json = await this.handler.transformDataRequest(res);
-        if (!json) return;
-        
+    async requestAvailableTickets(ticket) {
         // create filter
         this.builder.reset();
         this.builder.setDispatchDate(ticket.dispatch_date);
@@ -75,9 +69,16 @@ export default class Facade {
         this.builder.setRaicarType(ticket.railcar_type);
 
         const filter = this.builder.getFilterData();
+
+        // database
+        const res = await this.handler.getResponse(filter);
+        if (!res) return;
+        const json = await this.handler.transformDataRequest(res);
+        if (!json) return;
+
         const array = await this.handler.filterDataRequest(filter, json);
         if (!array) return;
 
         return array;
-    }    
+    }
 }

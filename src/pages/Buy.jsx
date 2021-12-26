@@ -2,8 +2,8 @@ import { Box, Card, CardActions, CardContent, Typography, Button } from '@materi
 import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Facade from '../../business/Facade';
-import { validate } from '../utils/validate';
+import Facade from '../modules/Facade';
+import { validate } from '../modules/utils/validate';
 
 const useStyles = makeStyles(theme => ({
     form: {

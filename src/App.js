@@ -1,5 +1,5 @@
 import './App.css';
-import Interface from './presentation/UI';
+import Interface from './modules/UI';
 
 function App() {
     return <Interface />;

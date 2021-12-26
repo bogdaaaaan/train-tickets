@@ -7,6 +7,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const router = require('./routes/index');
+const router1 = require('./routes/Service1');
+const router2 = require('./routes/Service2');
 const app = express();
 
 // view engine setup
@@ -22,6 +24,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json());
 app.use('/', router);
+app.use('/service1', router1);
+app.use('/service2', router2);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

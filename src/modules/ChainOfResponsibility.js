@@ -6,21 +6,8 @@ export default class ChainOfResponsibility {
         this.filter = new Specification();
     }
 
-    async addUserRequest(user) {
-        await this.database.addUser(user).then(data => {
-            try {
-                if (!data.ok) {
-                    throw new Error('Додавання нового користувача не вдалось!');
-                }
-                return data;
-            } catch (error) {
-                console.log('Виникла помилка з запитом: ', error.message);
-            };
-        })
-    }
-
-    async getResponse() {
-        return this.database.getvAvailableTickets().then(data => { 
+    async getResponse(filter) {
+        return this.database.getvAvailableTickets(filter).then(data => { 
             try {
                 if (!data.ok) {
                     throw new Error('Відповідь не була отримана');
@@ -47,6 +34,19 @@ export default class ChainOfResponsibility {
 
     async filterDataRequest(filter, data) {
         return await this.filter.filterTickets(filter, data);
+    }
+
+    async addUserRequest(user) {
+        await this.database.addUser(user).then(data => {
+            try {
+                if (!data.ok) {
+                    throw new Error('Додавання нового користувача не вдалось!');
+                }
+                return data;
+            } catch (error) {
+                console.log('Виникла помилка з запитом: ', error.message);
+            };
+        })
     }
 
     async removeTicketRequest(id) {
